@@ -19,29 +19,28 @@ export default function AdminLogin() {
 
   // ⛓️ Handle Login API
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setLoading(true);
+  e.preventDefault();
+  setErrorMsg("");
+  setLoading(true);
 
-    try {
-      const res = await adminLogin(formData.email, formData.password);
+  try {
+    const res = await adminLogin(formData.email, formData.password);
+    console.log("Login success:", res);
 
-      console.log("Login success:", res);
-
-      alert("Admin Login Successful!");
-
-      // 👉 Save admin info (optional)
-      localStorage.setItem("admin", JSON.stringify(res.admin));
-
-      // 👉 Redirect to Admin Dashboard
-      window.location.href = "/admin/dashboard";
-
-    } catch (error) {
-      setErrorMsg(error.message || "Login failed");
-    } finally {
-      setLoading(false);
+    if (!res.admin) {
+      throw new Error("Admin data not returned from API");
     }
-  };
+
+    localStorage.setItem("admin", JSON.stringify(res.admin));
+    navigate("/admin/dashboard");
+
+  } catch (error) {
+    setErrorMsg(error.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6 py-10">
